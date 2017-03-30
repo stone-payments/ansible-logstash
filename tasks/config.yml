@@ -1,44 +1,38 @@
 ---
-- name: Create Logstash configuration files.
-  template:
-    src: "{{ item }}.j2"
-    dest: "/etc/logstash/conf.d/{{ item }}"
-    owner: root
-    group: root
+- name: config | Ensure logstash config dir has right permissions
+  file:
+    path: "{{ logstash_config_dir }}"
+    owner: "{{ logstash_user }}"
+    group: "{{ logstash_group }}"
+    mode: 0755
+    state: directory
+
+- name: config | Create Logstash inputs.
+  copy:
+    src: "inputs/{{ item }}"
+    dest: "{{ logstash_config_dir }}/{{ item }}"
+    owner: "{{ logstash_user }}"
+    group: "{{ logstash_group }}"
     mode: 0644
-  with_items:
-    - 01-beats-input.conf
-    - 30-elasticsearch-output.conf
+  with_items: "{{ logstash_input_files | default([]) }}"
   notify: restart logstash
 
-- name: Create Logstash filters.
+- name: config | Create Logstash filters.
   copy:
     src: "filters/{{ item }}"
-    dest: "/etc/logstash/conf.d/{{ item }}"
-    owner: root
-    group: root
+    dest: "{{ logstash_config_dir }}/{{ item }}"
+    owner: "{{ logstash_user }}"
+    group: "{{ logstash_group }}"
     mode: 0644
-  with_items:
-    - 10-syslog.conf
-    - 11-nginx.conf
-    - 12-apache.conf
-    - 14-solr.conf
-    - 15-drupal.conf
+  with_items: "{{ logstash_filter_files | default([]) }}"
   notify: restart logstash
 
-- name: Create Logstash configuration file for local syslog.
+- name: config | Create Logstash outputs.
   template:
-    src: 02-local-syslog-input.conf.j2
-    dest: /etc/logstash/conf.d/02-local-syslog-input.conf
-    owner: root
-    group: root
+    src: "{{ item }}"
+    dest: "{{ logstash_config_dir }}/{{ item }}"
+    owner: "{{ logstash_user }}"
+    group: "{{ logstash_group }}"
     mode: 0644
-  when: logstash_monitor_local_syslog
-  notify: restart logstash
-
-- name: Ensure configuration for local syslog is absent if disabled.
-  file:
-    path: /etc/logstash/conf.d/02-local-syslog-input.conf
-    state: absent
-  when: not logstash_monitor_local_syslog
+  with_items: "{{ logstash_output_files | default([]) }}"
   notify: restart logstash

@@ -1,0 +1,34 @@
+---
+# - name: elasticsearch service
+#   hosts: group1
+#   roles:
+#     - role: buy4.elasticsearch
+#       vars:
+#         es_instance_name: "es1"
+#         es_data_dirs: "/opt/elasticsearch/data"
+#         es_log_dir: "/opt/elasticsearch/logs"
+#         es_scripts: false
+#         es_templates: false
+#         es_version_lock: false
+#         es_heap_size: 1g
+#         es_api_port: 9201
+#         es_api_host: "es1"
+#         use_system_d: false
+#         es_config:
+#           node.name: "es1"
+#           cluster.name: "custom-cluster"
+#           discovery.zen.ping.unicast.hosts: "virtualmachine-elasticsearch:9301"
+#           http.port: 9201
+#           transport.tcp.port: 9301
+#           node.data: false
+#           node.master: true
+#           bootstrap.memory_lock: true
+
+- name: logstash service
+  hosts: group1
+  roles:
+    - buy4.java
+    - buy4.logstash
+  vars:
+    logstash_enabled_on_boot: yes
+    remove_java: false

@@ -1,1 +1,6 @@
-files/logstash-forwarder*
+.molecule/
+.vagrant/
+*.pyc
+*.retry
+.cache/
+__pycache__/
