@@ -9,7 +9,7 @@ logstash_input_files:
   - 01-input.conf
 
 logstash_output_files:
-  - 03-output.conf.j2
+  - 03-output.conf
 
 logstash_filter_files:
   - 02-filter.conf

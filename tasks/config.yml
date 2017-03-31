@@ -29,7 +29,7 @@
 
 - name: config | Create Logstash outputs.
   template:
-    src: "{{ item }}"
+    src: "templates/{{ item }}.j2"
     dest: "{{ logstash_config_dir }}/{{ item }}"
     owner: "{{ logstash_user }}"
     group: "{{ logstash_group }}"
