@@ -8,8 +8,8 @@
     state: directory
 
 - name: config | Create Logstash inputs.
-  copy:
-    src: "inputs/{{ item }}"
+  template:
+    src: "templates/{{ item }}.j2"
     dest: "{{ logstash_config_dir }}/{{ item }}"
     owner: "{{ logstash_user }}"
     group: "{{ logstash_group }}"

@@ -7,3 +7,8 @@
   vars:
     logstash_enabled_on_boot: yes
     remove_java: false
+    beats:
+      - {type: "cerberus-log", port: 5001, linux: true}
+      - {type: "wineventlog", port: 5002, linux: false}
+    tcps:
+      - {type: "syslog", port: 5006}
