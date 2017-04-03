@@ -7,7 +7,7 @@
 
 - include: config.yml
 - include: ssl.yml
-# - include: plugins.yml
+- include: plugins.yml
 
 - name: Ensure Logstash is started and enabled on boot.
   service:

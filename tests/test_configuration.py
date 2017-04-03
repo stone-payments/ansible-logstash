@@ -31,3 +31,10 @@ def test_logstash_output_present(File):
     assert logstash_input.user == 'logstash'
     assert logstash_input.group == 'logstash'
     assert logstash_input.mode == 0644
+
+
+def test_logstash_input_does_not_contains_file(File):
+    logstash_input = File("/etc/logstash/conf.d/01-input.conf")
+    logstash_input_content = logstash_input.content_string
+    assert "file{\n" not in logstash_input_content
+    assert "file {\n" not in logstash_input_content
