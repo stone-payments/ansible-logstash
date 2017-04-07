@@ -7,32 +7,47 @@
     mode: 0755
     state: directory
 
-- name: config | Create Logstash inputs.
-  template:
-    src: "templates/{{ item }}.j2"
-    dest: "{{ logstash_config_dir }}/{{ item }}"
-    owner: "{{ logstash_user }}"
-    group: "{{ logstash_group }}"
-    mode: 0644
-  with_items: "{{ logstash_input_files | default([]) }}"
-  notify: restart logstash
+- name: config | check if pipeline files are already downloaded
+  find:
+    path: "{{ logstash_config_dir }}"
+    patterns: "*.conf"
+  register: confd_content
 
-- name: config | Create Logstash filters.
-  copy:
-    src: "filters/{{ item }}"
-    dest: "{{ logstash_config_dir }}/{{ item }}"
-    owner: "{{ logstash_user }}"
-    group: "{{ logstash_group }}"
-    mode: 0644
-  with_items: "{{ logstash_filter_files | default([]) }}"
-  notify: restart logstash
+- block:
+  - name: config | Download pipeline files locally
+    local_action: command cd /tmp/ && git archive --remote={{ item.url }} HEAD:{{ item.path }} | tar -x
+    become: false
+    with_items: "{{ pipeline_repository }}"
 
-- name: config | Create Logstash outputs.
-  template:
-    src: "templates/{{ item }}.j2"
-    dest: "{{ logstash_config_dir }}/{{ item }}"
-    owner: "{{ logstash_user }}"
-    group: "{{ logstash_group }}"
-    mode: 0644
-  with_items: "{{ logstash_output_files | default([]) }}"
-  notify: restart logstash
+  - name: config | Get downloaded files
+    local_action: find paths="/tmp" patterns="*.conf"
+    become: false
+    register: pipeline_files
+
+  - name: config | Check for files downloaded
+    fail:
+      msg: "No pipeline files were downloaded"
+    when: pipeline_files.files|length == 0
+
+  - name: config | Copy pipeline files
+    copy:
+      src: "{{ item.path }}"
+      dest: "{{ logstash_config_dir }}"
+      owner: "{{ logstash_user }}"
+      group: "{{ logstash_group }}"
+      mode: 0644
+    with_items: "{{ pipeline_files.files }}"
+    notify: restart logstash
+
+  - name: config | List copied files
+    find:
+      path: "{{ logstash_config_dir }}"
+      patterns: "*.conf"
+    register: copied_files
+
+  - name: config | Check if files were copied
+    fail:
+      msg: "No pipeline files were copied"
+    when: copied_files.files|length == 0
+
+  when: pipeline_repository is defined and confd_content.files|length > 0
