@@ -19,8 +19,11 @@ vagrant:
         memory: 512
         cpus: 2
   instances:
-    - name: virtualmachine-logstash
+    - name: virtualmachine-logstash01
       ansible_groups:
         - group1
+    - name: virtualmachine-logstash02
+      ansible_groups:
+        - group2
 verifier:
   name: testinfra

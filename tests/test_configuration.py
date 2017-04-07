@@ -22,3 +22,8 @@ if repo_defined:
         cmd_ls = Command("ls -l /etc/logstash/conf.d")
         stdout = cmd_ls.stdout.strip('\n')
         assert len(stdout) >= 1
+else:
+    def test_logstash_config_dir_empty(Command):
+        cmd_ls = Command("ls -l /etc/logstash/conf.d")
+        stdout = cmd_ls.stdout.strip('\n')
+        assert len(stdout) == 0

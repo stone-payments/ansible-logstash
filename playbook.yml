@@ -1,5 +1,5 @@
 ---
-- name: logstash service
+- name: logstash service with pipeline
   hosts: group1
   roles:
     - buy4.java
@@ -9,3 +9,12 @@
     remove_java: false
     pipeline_repository:
       - {url: "git@bitbucket.org:stonepayments/ei-logstash-pipelines.git", path: "cerberus-pipeline"}
+
+- name: logstash service without pipeline
+  hosts: group2
+  roles:
+    - buy4.java
+    - buy4.logstash
+  vars:
+    logstash_enabled_on_boot: yes
+    remove_java: false
