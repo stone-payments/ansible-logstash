@@ -50,4 +50,4 @@
       msg: "No pipeline files were copied"
     when: copied_files.files|length == 0
 
-  when: pipeline_repository is defined and confd_content.files|length > 0
+  when: pipeline_repository is defined and confd_content.files|length == 0

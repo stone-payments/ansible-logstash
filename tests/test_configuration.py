@@ -1,3 +1,11 @@
+import yaml
+repo_defined = False
+
+
+with open('playbook.yml', 'r') as playbook_file:
+    playbook_yaml = yaml.load(playbook_file)
+    global repo_defined
+    repo_defined = 'pipeline_repository' in playbook_yaml[0]['vars']
 
 
 def test_logstash_config_dir_present(File):
@@ -9,32 +17,8 @@ def test_logstash_config_dir_present(File):
     assert logstash_config_dir.mode == 0755
 
 
-def test_logstash_input_present(File):
-    logstash_input = File("/etc/logstash/conf.d/01-input.conf")
-    assert logstash_input.exists
-    assert logstash_input.user == 'logstash'
-    assert logstash_input.group == 'logstash'
-    assert logstash_input.mode == 0644
-
-
-def test_logstash_filter_present(File):
-    logstash_input = File("/etc/logstash/conf.d/02-filter.conf")
-    assert logstash_input.exists
-    assert logstash_input.user == 'logstash'
-    assert logstash_input.group == 'logstash'
-    assert logstash_input.mode == 0644
-
-
-def test_logstash_output_present(File):
-    logstash_input = File("/etc/logstash/conf.d/03-output.conf")
-    assert logstash_input.exists
-    assert logstash_input.user == 'logstash'
-    assert logstash_input.group == 'logstash'
-    assert logstash_input.mode == 0644
-
-
-def test_logstash_input_does_not_contains_file(File):
-    logstash_input = File("/etc/logstash/conf.d/01-input.conf")
-    logstash_input_content = logstash_input.content_string
-    assert "file{\n" not in logstash_input_content
-    assert "file {\n" not in logstash_input_content
+if repo_defined:
+    def test_logstash_config_dir_not_empty(Command):
+        cmd_ls = Command("ls -l /etc/logstash/conf.d")
+        stdout = cmd_ls.stdout.strip('\n')
+        assert len(stdout) >= 1
