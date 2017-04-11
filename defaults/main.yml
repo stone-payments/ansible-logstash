@@ -5,17 +5,7 @@ logstash_config_dir: "/etc/logstash/conf.d"
 logstash_user: logstash
 logstash_group: logstash
 
-logstash_input_files:
-  - 01-input.conf
-
-logstash_output_files:
-  - 03-output.conf
-
-logstash_filter_files:
-  - 02-filter.conf
-
-logstash_elasticsearch_hosts:
-  - http://localhost:9200
+force_pipeline_update: true
 
 logstash_ssl_dir: /etc/pki/logstash
 logstash_ssl_certificate_file: ""
@@ -25,3 +15,5 @@ logstash_enabled_on_boot: True
 
 logstash_install_plugins:
   - logstash-input-beats
+
+downloaded_repos_temp_dir: "/tmp/downloaded_repos"
