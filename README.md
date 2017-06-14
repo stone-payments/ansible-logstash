@@ -12,13 +12,6 @@ Though other methods are possible, this role is made to work with Elasticsearch 
 
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
-The port over which Logstash will listen for beats.
-
-    logstash_elasticsearch_hosts:
-      - http://localhost:9200
-
-The hosts where Logstash should ship logs to Elasticsearch.
-
     logstash_ssl_dir: /etc/pki/logstash
     logstash_ssl_certificate_file: logstash-forwarder-example.crt
     logstash_ssl_key_file: logstash-forwarder-example.key
@@ -46,19 +39,12 @@ A list of Logstash plugins that should be installed.
     logstash_user: logstash
     logstash_group: logstash
 
-    logstash_input_files:
-      - 01-input.conf
+The defaults for logstash confs location and permissions.
 
-    logstash_output_files:
-      - 03-output.conf.j2
+    force_pipeline_update: true
+    downloaded_repos_temp_dir: "/tmp/downloaded_repos"
 
-    logstash_filter_files:
-      - 02-filter.conf
-
-Default configuration files.
-
-## Other Notes
-This role gives only the setup for a dedicated Logstash server and still has some hardcoded configurations regarding our Cerberus cluster. The use of this role on other configurations and Logstash as an agent is under development.
+A flag to tell ansible whether it should update the custom pipelines and the default path where the role will download those pipelines.
 
 ## Example Playbook
 
@@ -70,11 +56,22 @@ This role gives only the setup for a dedicated Logstash server and still has som
         logstash_enabled_on_boot: yes
         remove_java: false
 
+Additionally you can define a list of dicts containing the path to a git repository where are located the pipelines you should use. Each dict should have the repository path and the path to the directory where the pipeline files are located.
+
+    - name: logstash service with pipeline
+      hosts: group1
+      roles:
+        - buy4.java
+        - buy4.logstash
+      vars:
+        logstash_enabled_on_boot: yes
+        remove_java: false
+        pipeline_repository:
+          - {url: "your_repository_path", path: "path/to/the/directory/where/are/the/pipeline/files"}
+
 ## License
 
 MIT / BSD
 
 ## To Do
-
-  - Receives a dictionarie to be used on the inputs/filters/outpus configuration files.
   - Setup logstash as agent
