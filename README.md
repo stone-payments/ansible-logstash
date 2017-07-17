@@ -69,6 +69,12 @@ Additionally you can define a list of dicts containing the path to a git reposit
         pipeline_repository:
           - {url: "your_repository_path", path: "path/to/the/directory/where/are/the/pipeline/files"}
 
+## Testing
+-------------
+
+This role was developed using [Molecule](https://molecule.readthedocs.io).
+The molecule.yml and the playbook.yml are on the root of this role.
+
 ## License
 
 MIT / BSD
