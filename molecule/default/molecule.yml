@@ -1,0 +1,30 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint:
+  name: yamllint
+platforms:
+  - name: logstash
+    image: centos/systemd:latest
+    command: /sbin/init
+    privileged: true
+    capabilities:
+      - SYS_ADMIN
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+provisioner:
+  name: ansible
+  playbooks:
+    converge: ../../playbook.yml
+  lint:
+    name: ansible-lint
+scenario:
+  name: default
+verifier:
+  name: testinfra
+  directory: ../../tests
+  lint:
+    name: flake8
+    enabled: true
