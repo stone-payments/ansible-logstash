@@ -1,0 +1,4 @@
+---
+- git: git@github.com:stone-payments/ansible-java.git
+  version: master
+  dst: ./roles/stone-payments.java/

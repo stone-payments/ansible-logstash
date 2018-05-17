@@ -1,6 +1,8 @@
 ---
 dependency:
   name: gilt
+  options:
+    debug: true
 driver:
   name: docker
 lint:
