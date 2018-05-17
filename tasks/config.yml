@@ -34,6 +34,7 @@
       file: path="{{ logstash_pipeline_repos_temp_dir }}" state=directory
       delegate_to: localhost
       become: false
+      changed_when: false
 
     - name: config | download pipeline files locally
       git:
@@ -43,6 +44,7 @@
       with_items: "{{ logstash_pipeline_repositories }}"
       become: false
       delegate_to: localhost
+      change_when: false
 
     - name: config | get downloaded files
       find:
@@ -87,6 +89,7 @@
         path: "{{ logstash_pipeline_repos_temp_dir }}"
         state: absent
       delegate_to: localhost
+      changed_when: false
   when:
     - logstash_pipeline_update
     - logstash_pipeline_repositories | length > 0
