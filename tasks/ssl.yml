@@ -20,11 +20,24 @@
         - "{{ logstash_ssl_key_file }}"
       delegate_to: localhost
 
+    - name: ssl | generate an OpenSSL private key.
+      openssl_privatekey:
+        path: "{{ logstash_ssl_key_file }}"
+      delegate_to: localhost
+
+    - name: Generate an OpenSSL CSR.
+      openssl_csr:
+        path: "{{ logstash_ssl_cert_file | dirname }}/logstash.csr"
+        privatekey_path: "{{ logstash_ssl_key_file }}"
+      delegate_to: localhost
+
     - name: ssl | generate new SSL key and cert
       openssl_certificate:
         path: "{{ logstash_ssl_cert_file }}"
         privatekey_path: "{{ logstash_ssl_key_file }}"
+        csr_path: "{{ logstash_ssl_cert_file | dirname }}/logstash.csr"
         provider: selfsigned
+      delegate_to: localhost
 
     - name: ssl | copy SSL key and cert for logstash-forwarder.
       copy:
