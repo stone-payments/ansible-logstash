@@ -29,6 +29,16 @@
     mode: 0755
     state: directory
 
+- name: allow logstash to listen on ports {{ logstash_http_port }}
+  seport:
+    ports: "{{ logstash_http_port }}"
+    proto: tcp
+    setype: http_port_t
+    state: present
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_selinux.status == "enabled"
+
 - block:
     - name: config | create tmp download dir
       file: path="{{ logstash_pipeline_repos_temp_dir }}" state=directory
