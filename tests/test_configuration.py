@@ -5,7 +5,7 @@ repo_defined = False
 with open('playbook.yml', 'r') as playbook_file:
     playbook_yaml = yaml.load(playbook_file)
     global repo_defined
-    repo_defined = 'pipeline_repository' in playbook_yaml[0]['vars']
+    repo_defined = 'logstash_pipeline_repositories' in playbook_yaml[0]['vars']
 
 
 def test_logstash_config_dir_present(File):
