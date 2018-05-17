@@ -3,26 +3,109 @@
 # Elastic Repository
 # -----------------------------------------------------------------------------
 logstash_version: 6.2.4
-logstash_yum_baseurl: https://artifacts.elastic.co/packages/"{{ es_version.split('.')[0]+'.x'}}"/yum
+logstash_yum_baseurl: https://artifacts.elastic.co/packages/"{{ logstash_version.split('.')[0]+'.x'}}"/yum
 logstash_yum_repo_gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
 logstash_yum_gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
 
 # -----------------------------------------------------------------------------
-# Logstash configuration
+# Logstash Configuration
 # -----------------------------------------------------------------------------
-logstash_config_dir: "/etc/logstash/conf.d"
 logstash_user: logstash
 logstash_group: logstash
+logstash_heap_size: ""
 
-force_pipeline_update: true
+# To configure logstash pipelines using a remotaly oringe
+logstash_pipeline_update: false
+logstash_pipeline_repos_temp_dir: /tmp/logstash_pipeline_repos
+logstash_pipeline_repositories: []
 
-logstash_ssl_dir: /etc/pki/logstash
-logstash_ssl_certificate_file: ""
-logstash_ssl_key_file: ""
+# SSL Settings
+logstash_ssl: false
+logstash_force_ssl: false
+logstash_ssl_path: /etc/pki/logstash
+logstash_ssl_cert_file: /tmp/pki/logstash/cert/logstash.crt
+logstash_ssl_key_file: /tmp/pki/logstash/key/logstash.key
 
-logstash_enabled_on_boot: True
+# -----------------------------------------------------------------------------
+# Node Settings
+# -----------------------------------------------------------------------------
+logstash_node_name: "{{ ansible_nodename }}"
+logstash_path_data: /var/lib/logstash
+logstash_path_logs: /var/log/logstash
+logstash_path_config: /etc/logstash/conf.d
+logstash_path_queue: "{{ logstash_path_data }}/queue"
 
-logstash_install_plugins:
+# -----------------------------------------------------------------------------
+# Pipeline Settings
+# -----------------------------------------------------------------------------
+logstash_pipeline:
+  pipline:
+    id: main
+    workers: 1
+    batch:
+      size: 125
+      delay: 50
+    # WARNING: enabling this can lead to data loss during shutdown
+    unsafe_shutdown: false
+
+# -----------------------------------------------------------------------------
+# Pipeline Configuration Settings
+# -----------------------------------------------------------------------------
+logstash_pipeline_config:
+  config:
+    string: None
+    test_and_exit: false
+    reload:
+      automatic: false
+      interval: 3s
+    # Show fully compiled configuration as debug log message
+    # NOTE: --log.level must be 'debug'
+    debug: false
+    support_escapes: false
+
+# -----------------------------------------------------------------------------
+# Queuing Settings
+# -----------------------------------------------------------------------------
+logstash_queue:
+  queue:
+    type: memory
+    page_capacity: 64mb
+    max_events: 0
+    max_bytes: 1024mb
+    checkpoint:
+      acks: 1024
+      writes: 1024
+      interval: 1000
+    drain: false
+
+# -----------------------------------------------------------------------------
+# Dead-Letter Queue Settings
+# -----------------------------------------------------------------------------
+logstash_dead_letter_queue_enabled: false
+logstash_dead_letter_queue_max_bytes: 1024mb
+logstash_dead_letter_queue_path: "{{ logstash_path_data }}/dead_letter_queue"
+
+# -----------------------------------------------------------------------------
+# Metrics Settings
+# -----------------------------------------------------------------------------
+logstash_http_host: 127.0.0.1
+logstash_http_port: 9600-9700
+
+# -----------------------------------------------------------------------------
+# Debugging Settings
+# -----------------------------------------------------------------------------
+logstash_log_level: info
+logstash_log_format: plain
+
+# -----------------------------------------------------------------------------
+# Logstash Plugins
+# -----------------------------------------------------------------------------
+logstash_install_plugins: true
+logstash_path_plugins: /usr/share/logstash/plugins
+
+logstash_plugins:
   - logstash-input-beats
 
-downloaded_repos_temp_dir: "/tmp/downloaded_repos"
+logstash_xpack_plugin: true
+logstash_xpack_monitoring_elasticsearch_username: logstash_system
+logstash_xpack_monitoring_elasticsearch_password: logstashpassword

@@ -1,7 +1,6 @@
-.molecule/
-.vagrant/
 *.pyc
 *.retry
 .cache/
 __pycache__/
 downloaded_repos/
+roles

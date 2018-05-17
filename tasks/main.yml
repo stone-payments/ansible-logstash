@@ -1,16 +1,15 @@
 ---
-- include: setup-RedHat.yml
+- name: tasks to install logstash
+  include_tasks: install_rhel.yml
   when: ansible_os_family == 'RedHat'
 
-- include: setup-Debian.yml
-  when: ansible_os_family == 'Debian'
+- name: tasks to configure logstash
+  include_tasks: config.yml
 
-- include: config.yml
-- include: ssl.yml
-- include: plugins.yml
+- name: tasks to generate a selfsigned ssl certificate
+  include_tasks: ssl.yml
+  when: logstash_ssl
 
-- name: Ensure Logstash is started and enabled on boot.
-  service:
-    name: logstash
-    state: started
-    enabled: "{{ logstash_enabled_on_boot }}"
+- name: tasks to install logstash plugins
+  include_tasks: plugins.yml
+  when: logstash_install_plugins

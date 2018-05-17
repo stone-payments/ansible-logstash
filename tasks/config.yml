@@ -1,54 +1,94 @@
 ---
-- name: config | Ensure logstash config dir has right permissions
+- name: config | copy logstash.yml config file
+  template:
+    src: logstash.yml.j2
+    dest: /etc/logstash/logstash.yml
+    owner: "{{ logstash_user }}"
+    group: "{{ logstash_group }}"
+    mode: 0644
+    backup: true
+  notify:
+    - restart logstash
+
+- name: config | copy logstash jvm.options file
+  template:
+    src: jvm.options.j2
+    dest: /etc/logstash/jvm.options
+    owner: "{{ logstash_user }}"
+    group: "{{ logstash_user }}"
+    mode: 0644
+    backup: true
+  notify:
+    - restart logstash
+
+- name: config | ensure logstash config dir has right permissions
   file:
-    path: "{{ logstash_config_dir }}"
+    path: "{{ logstash_path_config }}"
     owner: "{{ logstash_user }}"
     group: "{{ logstash_group }}"
     mode: 0755
     state: directory
 
 - block:
-  - name: config | Create tmp download dir
-    local_action: file path={{ downloaded_repos_temp_dir }} state=directory
-    become: false
+    - name: config | create tmp download dir
+      file: path="{{ logstash_pipeline_repos_temp_dir }}" state=directory
+      delegate_to: localhost
+      become: false
 
-  - name: config | Download pipeline files locally
-    local_action: command bash -c "git archive --remote={{ item.url }} HEAD:{{ item.path }} | tar -x -C {{ downloaded_repos_temp_dir }}"
-    become: false
-    register: result
-    changed_when: "result.rc != 0"
-    with_items: "{{ pipeline_repository }}"
+    - name: config | download pipeline files locally
+      git:
+        repo: "{{ item.repo }}"
+        dest: "{{ logstash_pipeline_repos_temp_dir }}"
+        version: master
+      with_items: "{{ logstash_pipeline_repositories }}"
+      become: false
+      delegate_to: localhost
 
-  - name: config | Get downloaded files
-    local_action: find paths="{{ downloaded_repos_temp_dir }}" patterns="*.conf"
-    become: false
-    register: pipeline_files
+    - name: config | get downloaded files
+      find:
+        paths: "{{ logstash_pipeline_repos_temp_dir }}/{{ item.1 }}"
+        patterns: "*.conf"
+      with_subelements:
+        - "{{ logstash_pipeline_repositories }}"
+        - path
+      register: pipelines_found
+      delegate_to: localhost
 
-  - name: config | Check for files downloaded
-    fail:
-      msg: "No pipeline files were downloaded"
-    when: pipeline_files.files|length == 0
+    - name: config | check for files downloaded
+      fail: msg="*** No pipeline files were downloaded"
+      with_items: "{{ pipelines_found.results }}"
+      when: item.matched == 0
 
-  - name: config | Copy pipeline files
-    copy:
-      src: "{{ item.path }}"
-      dest: "{{ logstash_config_dir }}"
-      owner: "{{ logstash_user }}"
-      group: "{{ logstash_group }}"
-      mode: 0644
-    with_items: "{{ pipeline_files.files }}"
-    notify: restart logstash
+    - name: config | copy pipeline files
+      copy:
+        src: "{{ item.1.path }}"
+        dest: "{{ logstash_path_config }}"
+        owner: "{{ logstash_user }}"
+        group: "{{ logstash_group }}"
+        mode: 0644
+      with_subelements:
+        - "{{ pipelines_found.results }}"
+        - files
+      notify:
+        - restart logstash
 
-  - name: config | List copied files
-    find:
-      path: "{{ logstash_config_dir }}"
-      patterns: "*.conf"
-    register: copied_files
+    - name: config | list copied files
+      find:
+        path: "{{ logstash_path_config }}"
+        patterns: "*.conf"
+      register: copied_files
 
-  - name: config | Check if files were copied
-    fail:
-      msg: "No pipeline files were copied"
-    when: copied_files.files|length == 0
+    - name: config | check if files were copied
+      fail: msg="*** No pipeline files were copied"
+      when: copied_files.matched == 0
 
-  - meta: flush_handlers
-  when: force_pipeline_update and pipeline_repository is defined
+    - name: config | remove temporary files
+      file:
+        path: "{{ logstash_pipeline_repos_temp_dir }}"
+        state: absent
+      delegate_to: localhost
+  when:
+    - logstash_pipeline_update
+    - logstash_pipeline_repositories | length > 0
+
+- meta: flush_handlers

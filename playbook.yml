@@ -1,21 +1,14 @@
 ---
-# - name: logstash service with pipeline
-#   hosts: group1
-#   roles:
-#     - stone-payments.java
-#     - stone-payments.logstash
-#   vars:
-#     logstash_enabled_on_boot: yes
-#     remove_java: false
-#     pipeline_repository:
-#       - url: "git@bitbucket.org:stonepayments/ei-logstash-pipelines.git"
-#         path: "cerberus-pipeline"
-
-- name: logstash service without pipeline
-  hosts: group2
+- name: Playbook to install and configure Logstash Service with pipeline
+  hosts: all
+  vars:
+    # logstash_ssl: true
+    logstash_pipeline_update: true
+    logstash_pipeline_repositories:
+      - repo: git@github.com:stone-payments/logstash-pipelines.git
+        path:
+          - cerberus-pipeline
+          - auth-pipeline
   roles:
     - stone-payments.java
     - stone-payments.logstash
-  vars:
-    logstash_enabled_on_boot: yes
-    remove_java: false

@@ -1,20 +1,12 @@
 ---
-dependencies: [ buy4.java ]
-
 galaxy_info:
   author: Carlos Martins
   description: Role for installing Logstash on linux server
-  company: Buy4 Processamento de Pagamentos S.A.
+  company: Stone Payments S.A.
   license: "license (BSD, MIT)"
-  min_ansible_version: 1.8
+  min_ansible_version: 2.3
   platforms:
     - name: EL
       versions:
-      - 6
-      - 7
-    - name: Debian
-      versions:
-      - all
-    - name: Ubuntu
-      versions:
-      - all
+        - 6
+        - 7

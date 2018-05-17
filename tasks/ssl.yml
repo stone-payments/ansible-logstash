@@ -1,17 +1,48 @@
 ---
-- name: ssl | Ensure Logstash SSL key pair directory exists.
+- name: ssl | ensure Logstash SSL key pair directory exists
   file:
-    path: "{{ logstash_ssl_dir }}"
+    path: "{{ logstash_ssl_path }}"
     state: directory
-  when: logstash_ssl_key_file
 
-- name: ssl | Copy SSL key and cert for logstash-forwarder.
-  copy:
-    src: "{{ item }}"
-    dest: "{{ logstash_ssl_dir }}/{{ item | basename }}"
-    mode: 0644
-  with_items:
-    - "{{ logstash_ssl_key_file }}"
-    - "{{ logstash_ssl_certificate_file }}"
-  notify: restart logstash
-  when: logstash_ssl_key_file
+- name: ssl | check if logstash.crt exists
+  stat:
+    path: "{{ logstash_ssl_path }}/logstash.crt"
+  register: stat_result
+
+- block:
+    - name: ssl | create SSL temp directory
+      file:
+        path: "{{ item | dirname }}"
+        recurse: true
+        state: directory
+      with_items:
+        - "{{ logstash_ssl_cert_file }}"
+        - "{{ logstash_ssl_key_file }}"
+      delegate_to: localhost
+
+    - name: ssl | generate new SSL key and cert
+      openssl_certificate:
+        path: "{{ logstash_ssl_cert_file }}"
+        privatekey_path: "{{ logstash_ssl_key_file }}"
+        provider: selfsigned
+
+    - name: ssl | copy SSL key and cert for logstash-forwarder.
+      copy:
+        src: "{{ item }}"
+        dest: "{{ logstash_ssl_path }}/{{ item | basename }}"
+        mode: 0644
+      with_items:
+        - "{{ logstash_ssl_key_file }}"
+        - "{{ logstash_ssl_cert_file }}"
+      notify:
+        - restart logstash
+
+    - name: ssl | remove temporary files
+      file:
+        path: "{{ item | dirname }}"
+        state: absent
+      with_items:
+        - "{{ logstash_ssl_cert_file }}"
+        - "{{ logstash_ssl_key_file }}"
+      delegate_to: localhost
+  when: logstash_force_ssl or stat_result.stat.exists == false

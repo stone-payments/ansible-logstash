@@ -1,0 +1,26 @@
+---
+- name: install | adds elastic repository
+  yum_repository:
+    name: elastic
+    description: Elastic Official Repository
+    baseurl: "{{ logstash_yum_baseurl }}"
+    gpgcheck: true
+    gpgkey: "{{ logstash_yum_repo_gpgkey }}"
+    enabled: true
+    state: present
+
+- name: install | trusts the repository GPG key
+  rpm_key:
+    state: present
+    key: "{{ logstash_yum_gpgkey }}"
+
+- name: install | installs logstash
+  package:
+    name: logstash
+    state: present
+
+- name: install | ensure Logstash is started and enabled on boot
+  service:
+    name: logstash
+    state: started
+    enabled: true

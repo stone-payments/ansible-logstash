@@ -1,15 +1,16 @@
 ---
-- name: plugins | Get list of installed plugins.
-  command: >
-    ./bin/logstash-plugin list
-    chdir=/opt/logstash
-  register: logstash_plugins_list
-  changed_when: false
+- name: plugins | install logstash plugins
+  logstash_plugin:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ logstash_plugins }}"
+  notify:
+    - restart logstash
 
-- name: plugins | Install configured plugins.
-  command: >
-    ./bin/logstash-plugin install {{ item }}
-    chdir=/opt/logstash
-  with_items: "{{ logstash_install_plugins }}"
-  when: "item not in logstash_plugins_list.stdout"
-  notify: restart logstash
+- name: plugins | install x-pack plugin
+  logstash_plugin:
+    name: x-pack
+    state: present
+  when: logstash_xpack_plugin
+  notify:
+    - restart logstash

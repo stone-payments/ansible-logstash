@@ -1,0 +1,105 @@
+# {{ ansible_managed }}
+
+# Settings file in YAML
+#                                                                                                                                                                                         
+# Settings can be specified either in hierarchical form, e.g.:
+#   pipeline:
+#     batch:
+#       size: 125
+#       delay: 5
+#
+# Or as flat keys:
+#   pipeline.batch.size: 125
+#   pipeline.batch.delay: 5
+
+# -----------------------------------------------------------------------------
+# Node Settings
+# -----------------------------------------------------------------------------
+node.name: {{ logstash_node_name }}
+path.data: {{ logstash_path_data }}
+path.logs: {{ logstash_path_logs }}
+path.queue: {{ logstash_path_queue }}
+path.config: {{ logstash_path_config }}/*.conf
+
+# -----------------------------------------------------------------------------
+# Pipeline Settings
+# -----------------------------------------------------------------------------
+{{ logstash_pipeline | to_nice_yaml(indent=2) }}
+
+# -----------------------------------------------------------------------------
+# Pipeline Configuration Settings
+# -----------------------------------------------------------------------------
+{{ logstash_pipeline_config | to_nice_yaml(indent=2) }}
+
+# -----------------------------------------------------------------------------
+# Queuing Settings
+# -----------------------------------------------------------------------------
+{{ logstash_queue | to_nice_yaml(indent=2) }}
+
+# -----------------------------------------------------------------------------
+# Dead-Letter Queue Settings
+# -----------------------------------------------------------------------------
+dead_letter_queue.enable: {{ logstash_dead_letter_queue_enabled }}
+dead_letter_queue.max_bytes: {{ logstash_dead_letter_queue_max_bytes }}
+{% if logstash_dead_letter_queue_enabled %}
+path.dead_letter_queue: {{ logstash_dead_letter_queue_path }}
+{% endif %}
+
+# -----------------------------------------------------------------------------
+# Metrics Settings
+# -----------------------------------------------------------------------------
+http.host: {{ logstash_http_host }}
+http.port: {{ logstash_http_port }}
+
+# -----------------------------------------------------------------------------
+# Debugging Settings
+# -----------------------------------------------------------------------------
+log.level: {{ logstash_log_level }}
+log.format: {{ logstash_log_format }}
+
+# -----------------------------------------------------------------------------
+# Module Settings
+# -----------------------------------------------------------------------------
+# Define modules here.  Modules definitions must be defined as an array.
+# The simple way to see this is to prepend each `name` with a `-`, and keep
+# all associated variables under the `name` they are associated with, and
+# above the next, like this:
+#
+# modules:
+#   - name: MODULE_NAME
+#     var.PLUGINTYPE1.PLUGINNAME1.KEY1: VALUE
+#     var.PLUGINTYPE1.PLUGINNAME1.KEY2: VALUE
+#     var.PLUGINTYPE2.PLUGINNAME1.KEY1: VALUE
+#     var.PLUGINTYPE3.PLUGINNAME3.KEY1: VALUE
+#
+# Module variable names must be in the format of
+#
+# var.PLUGIN_TYPE.PLUGIN_NAME.KEY
+#
+# modules:
+
+# -----------------------------------------------------------------------------
+# Cloud Settings
+# -----------------------------------------------------------------------------
+# Define Elastic Cloud settings here.
+# Format of cloud.id is a base64 value e.g. dXMtZWFzdC0xLmF3cy5mb3VuZC5pbyRub3RhcmVhbCRpZGVudGlmaWVy
+# and it may have an label prefix e.g. staging:dXMtZ...
+# This will overwrite 'var.elasticsearch.hosts' and 'var.kibana.host'
+# cloud.id: <identifier>
+#
+# Format of cloud.auth is: <user>:<pass>
+# This is optional
+# If supplied this will overwrite 'var.elasticsearch.username' and 'var.elasticsearch.password'
+# If supplied this will overwrite 'var.kibana.username' and 'var.kibana.password'
+# cloud.auth: elastic:<password>
+
+# -----------------------------------------------------------------------------
+# Other Settings
+# -----------------------------------------------------------------------------
+#
+# Where to find custom plugins
+path.plugins: {{ logstash_path_plugins }}
+{% if logstash_xpack_plugin %}
+xpack.monitoring.elasticsearch.username: {{ logstash_xpack_monitoring_elasticsearch_username }}
+xpack.monitoring.elasticsearch.password: {{ logstash_xpack_monitoring_elasticsearch_password }}
+{% endif %}
