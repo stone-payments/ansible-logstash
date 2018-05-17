@@ -43,8 +43,8 @@ logstash_pipeline:
     id: main
     workers: 1
     batch:
-      size: 125
       delay: 50
+      size: 125
     # WARNING: enabling this can lead to data loss during shutdown
     unsafe_shutdown: false
 
