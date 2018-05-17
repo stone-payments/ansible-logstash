@@ -19,7 +19,6 @@
         - "{{ logstash_ssl_cert_file }}"
         - "{{ logstash_ssl_key_file }}"
       delegate_to: localhost
-      change_when: false
 
     - name: ssl | generate an OpenSSL private key.
       openssl_privatekey:
@@ -50,14 +49,4 @@
         - "{{ logstash_ssl_cert_file }}"
       notify:
         - restart logstash
-
-    - name: ssl | remove temporary files
-      file:
-        path: "{{ item | dirname }}"
-        state: absent
-      with_items:
-        - "{{ logstash_ssl_cert_file }}"
-        - "{{ logstash_ssl_key_file }}"
-      delegate_to: localhost
-      change_when: false
   when: logstash_force_ssl or stat_result.stat.exists == false
