@@ -2,13 +2,8 @@
 - name: Playbook to install and configure Logstash Service with pipeline
   hosts: all
   vars:
-    # logstash_ssl: true
     logstash_pipeline_update: true
-    logstash_pipeline_repositories:
-      - repo: git@github.com:stone-payments/logstash-pipelines.git
-        path:
-          - cerberus-pipeline
-          - auth-pipeline
+    logstash_pipeline_repositories: []
   roles:
     - stone-payments.java
     - stone-payments.logstash
