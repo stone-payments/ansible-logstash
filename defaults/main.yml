@@ -3,7 +3,7 @@
 # Elastic Repository
 # -----------------------------------------------------------------------------
 logstash_version: 6.2.4
-logstash_yum_baseurl: https://artifacts.elastic.co/packages/"{{ logstash_version.split('.')[0]+'.x'}}"/yum
+logstash_yum_baseurl: https://artifacts.elastic.co/packages/{{ logstash_version.split('.')[0]+'.x'}}/yum
 logstash_yum_repo_gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
 logstash_yum_gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
 
