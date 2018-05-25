@@ -29,7 +29,7 @@
     mode: 0755
     state: directory
 
-- name: allow logstash to listen on ports {{ logstash_http_port }}
+- name: config | allow logstash to listen on ports {{ logstash_http_port }}
   seport:
     ports: "{{ logstash_http_port }}"
     proto: tcp
