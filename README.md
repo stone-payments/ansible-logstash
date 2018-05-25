@@ -10,9 +10,9 @@ Available variables are listed below, along with default values (see [`defaults/
 ```yaml
 logstash_pipeline_update: true
 logstash_pipeline_repositories:
-	- repo: git@github.com:stone-payments/logstash-pipelines.git
-		path:
-			- example-pipeline-path
+  - repo: git@github.com:stone-payments/logstash-pipelines.git
+    path:
+      - example-pipeline-path
 ```
 
 Local paths to the SSL certificate and key files, which will be copied into the `logstash_ssl_path`.
@@ -25,7 +25,7 @@ A list of Logstash plugins that should be installed:
 
 ```yaml
 logstash_install_plugins:
-	- logstash-input-beats
+  - logstash-input-beats
 ```
 
 The defaults for logstash confs location and permissions:
@@ -46,7 +46,7 @@ logstash_pipeline_repos_temp_dir: /tmp/logstash_pipeline_repos
 
 ```yaml
 - hosts: all
-	roles:
+  roles:
     - stone-payments.java
     - stone-payments.logstash
 ```
@@ -55,17 +55,17 @@ Additionally you can define a list of dicts containing the path to a git reposit
 
 ```yaml
 - name: logstash service with pipeline
-	hosts: all
-    vars:
+  hosts: all
+  vars:
     logstash_ssl: true
     logstash_pipeline_update: true
     logstash_pipeline_repositories:
-			- repo: "your_repository_path"
-				path:
-					- "path/to/the/directory/where/are/the/pipeline/files"
-    roles:
-    	- stone-payments.java
-      - stone-payments.logstash
+      - repo: "your_repository_path"
+        path:
+          - "path/to/the/directory/where/are/the/pipeline/files"
+  roles:
+    - stone-payments.java
+    - stone-payments.logstash
 ```
 
 ## Testing
