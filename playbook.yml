@@ -2,6 +2,7 @@
 - name: Playbook to install and configure Logstash Service with pipeline
   hosts: all
   vars:
+    logstash_version: ""
     logstash_pipeline_update: true
     logstash_pipeline_repositories: []
   roles:
