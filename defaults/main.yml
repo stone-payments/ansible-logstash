@@ -10,6 +10,9 @@ logstash_yum_gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
 # -----------------------------------------------------------------------------
 # Logstash Configuration
 # -----------------------------------------------------------------------------
+# workaround for logstash version 5.x
+logstash_java_home: /usr/lib/jvm/jre-1.8.0
+
 logstash_user: logstash
 logstash_group: logstash
 logstash_heap_size: ""

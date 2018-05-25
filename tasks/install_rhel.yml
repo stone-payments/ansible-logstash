@@ -18,6 +18,8 @@
   package:
     name: logstash
     state: present
+  environment:  # workarround for logstash version 5.x
+    JAVA_HOME: "{{ logstash_java_home }}"
 
 - name: install | ensure Logstash is started and enabled on boot
   service:
