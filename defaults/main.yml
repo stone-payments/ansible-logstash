@@ -42,7 +42,7 @@ logstash_path_queue: "{{ logstash_path_data }}/queue"
 # Pipeline Settings
 # -----------------------------------------------------------------------------
 logstash_pipeline:
-  pipline:
+  pipeline:
     id: main
     workers: 1
     batch:
