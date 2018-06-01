@@ -98,7 +98,10 @@ log.format: {{ logstash_log_format }}
 # -----------------------------------------------------------------------------
 #
 # Where to find custom plugins
-path.plugins: {{ logstash_path_plugins }}
+path.plugins:
+{% for item in logstash_path_plugins %}
+  - {{ item }}
+{% endfor %}
 {% if logstash_xpack_plugin %}
 xpack.monitoring.elasticsearch.username: {{ logstash_xpack_monitoring_elasticsearch_username }}
 xpack.monitoring.elasticsearch.password: {{ logstash_xpack_monitoring_elasticsearch_password }}

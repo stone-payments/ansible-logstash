@@ -56,11 +56,9 @@ logstash_pipeline:
 # -----------------------------------------------------------------------------
 logstash_pipeline_config:
   config:
-    string: None
     test_and_exit: false
     reload:
       automatic: false
-      interval: 3s
     # Show fully compiled configuration as debug log message
     # NOTE: --log.level must be 'debug'
     debug: false
@@ -104,7 +102,8 @@ logstash_log_format: plain
 # Logstash Plugins
 # -----------------------------------------------------------------------------
 logstash_install_plugins: true
-logstash_path_plugins: /usr/share/logstash/plugins
+logstash_path_plugins:
+  - /usr/share/logstash/plugins
 
 logstash_plugins:
   - logstash-input-beats
