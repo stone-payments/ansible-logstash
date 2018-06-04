@@ -3,6 +3,8 @@
   hosts: all
   vars:
     logstash_version: ""
+    logstash_xpack_plugin: true
+    logstash_xpack_plugin_elasticsearch_url: ["http://localhost:9200"]
     logstash_pipeline_update: true
     logstash_pipeline_repositories: []
   roles:
