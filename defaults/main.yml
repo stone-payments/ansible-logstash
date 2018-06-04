@@ -109,5 +109,4 @@ logstash_plugins:
   - logstash-input-beats
 
 logstash_xpack_plugin: true
-logstash_xpack_monitoring_elasticsearch_username: logstash_system
-logstash_xpack_monitoring_elasticsearch_password: logstashpassword
+logstash_xpack_plugin_elasticsearch_url: ["http://localhost:9200"]
