@@ -1,4 +1,13 @@
 ---
+- name: plugins | creates folder to logstash plugins
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ logstash_user }}"
+    group: "{{ logstash_group }}"
+    mode: 0755
+  with_items: "{{ logstash_path_plugins }}"
+
 - name: plugins | install logstash plugins
   logstash_plugin:
     name: "{{ item }}"
