@@ -103,6 +103,8 @@ path.plugins:
   - {{ item }}
 {% endfor %}
 {% if logstash_xpack_plugin %}
-xpack.monitoring.elasticsearch.username: {{ logstash_xpack_monitoring_elasticsearch_username }}
-xpack.monitoring.elasticsearch.password: {{ logstash_xpack_monitoring_elasticsearch_password }}
+xpack.monitoring.elasticsearch.url:
+{% for item in logstash_xpack_plugin_elasticsearch_url %}
+  - {{ item }}
+{% endfor %}
 {% endif %}
